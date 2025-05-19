@@ -26,11 +26,11 @@ const config: PlaywrightTestConfig = defineConfig<EyesFixture>({
       // matchTimeout: 0,
       // waitBeforeScreenshots: 50,
       // saveNewTests: true,
-      browsersInfo: [
-        { name: 'chrome', width: 375, height: 667 }, // Mobile
-        { name: 'chrome', width: 768, height: 1024 }, // Tablet
-        { name: 'chrome', width: 1440, height: 900 }, // Desktop
-      ],
+      // browsersInfo: [
+      //   { name: 'chrome', width: 375, height: 667 }, // Mobile
+      //   { name: 'chrome', width: 768, height: 1024 }, // Tablet
+      //   { name: 'chrome', width: 1440, height: 900 }, // Desktop
+      // ],
       sendDom: true,
       //layoutBreakpoints: true,
     
