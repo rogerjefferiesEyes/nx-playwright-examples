@@ -1,0 +1,96 @@
+name: CI
+on:
+  # push:
+  #   branches: [ main ]
+  pull_request:
+    branches:
+      - '**'
+  # workflow_dispatch:
+
+env: 
+  APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
+  APPLITOOLS_BATCH_ID: ${{ github.event.pull_request.head.sha || github.sha }}
+  APPLITOOLS_SERVER_URL : "https://eyesapi.applitools.com"
+  PW_TEST_HTML_REPORT_OPEN: "never"
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      # - name: Restore cached npm dependencies
+      #   uses: actions/cache/restore@v3
+      #   with:
+      #     path: |
+      #       node_modules
+      #       ~/.cache/Cypress # needed for the Cypress binary
+      #     key: npm-dependencies-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm install --no-frozen-lockfile
+      # - name: Cache npm dependencies
+      #   uses: actions/cache/save@v3
+      #   with:
+      #     path: |
+      #       node_modules
+      #       ~/.cache/Cypress # needed for the Cypress binary
+      #     key: npm-dependencies-${{ hashFiles('pnpm-lock.yaml') }}
+      # Figures out the version of playwright that's installed.
+      # 1. Because we don't know what version yarn will resolve it to, we have
+      #    to use `yarn why` to get the actually installed version.
+      # 2. Because we're in a workspace, we need to make sure we get the version
+      #    for the root and not any children, hence the `grep`. If not using
+      #    workspaces, this can be skipped.
+      # 3. jq comes pre-installed in the Ubuntu runner, so we use that to get
+      #    the correct version string.
+      # 4. Finally, we use sed to extract just the version number (eg; '1.22.0')
+      # The result is stored in steps.playwright-version.outputs.version
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "::set-output name=version::$(yarn why --json @playwright/test | grep -h 'workspace:.' | jq --raw-output '.children[].locator' | sed -e 's/@playwright\/test@.*://')"
+
+      # Attempt to restore the correct Playwright browser binaries based on the
+      # currently installed version of Playwright (The browser binary versions
+      # may change with Playwright versions).
+      # Note: Playwright's cache directory is hard coded because that's what it
+      # says to do in the docs. There doesn't appear to be a command that prints
+      # it out for us.
+      - uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: '~/.cache/ms-playwright'
+          key: '${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}'
+          # As a fallback, if the Playwright version has changed, try use the
+          # most recently cached version. There's a good chance that at least one
+          # of the browser binary versions haven't been updated, so Playwright can
+          # skip installing that in the next step.
+          # Note: When falling back to an old cache, `cache-hit` (used below)
+          # will be `false`. This allows us to restore the potentially out of
+          # date cache, but still let Playwright decide if it needs to download
+          # new binaries or not.
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      # If the Playwright browser binaries weren't able to be restored, we tell
+      # paywright to install everything for us.
+      - name: Install Playwright's dependencies
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps
+
+      - name: Test code 
+        run: npx nx e2e mands-e2e
+
+      - name: Close Applitools Batch
+        if: always()
+        run: curl -v -X DELETE "$APPLITOOLS_SERVER_URL/api/sessions/batches/$APPLITOOLS_BATCH_ID/close/bypointerid?apiKey=$APPLITOOLS_API_KEY"
+
+      - name: Archive Playwright results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/index.html
+        
