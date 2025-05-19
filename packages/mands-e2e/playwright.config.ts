@@ -17,10 +17,10 @@ const config: PlaywrightTestConfig = defineConfig<EyesFixture>({
       //apiKey: '', // alternatively, set this via environment variable APPLITOOLS_API_KEY
       // serverUrl: 'https://eyes.applitools.com',
 
-      failTestsOnDiff: false,
+      failTestsOnDiff: 'afterAll',
       // appName: 'My App',
       // matchLevel: 'Strict',
-      batch: { name: 'My Batch' },
+      batch: { name: 'My Batch', notifyOnCompletion: true },
       // proxy: {url: 'http://127.0.0.1:8888'},
       // stitchMode: 'CSS',
       // matchTimeout: 0,
