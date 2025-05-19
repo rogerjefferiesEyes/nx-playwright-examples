@@ -47,7 +47,7 @@ export const baseConfig: PlaywrightTestConfig = defineConfig<EyesFixture>({
             { name: 'chrome', width: 1440, height: 900 },
             { name: 'firefox', width: 1024, height: 768 },
           ],
-          failTestsOnDiff: 'afterEach',
+          failTestsOnDiff: 'afterAll',
         }
       },
     },
