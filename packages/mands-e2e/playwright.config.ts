@@ -20,7 +20,7 @@ const config: PlaywrightTestConfig = defineConfig<EyesFixture>({
       failTestsOnDiff: 'afterAll',
       // appName: 'My App',
       // matchLevel: 'Strict',
-      batch: { name: 'My Batch', notifyOnCompletion: true },
+      // batch: { name: 'My Batch'},
       // proxy: {url: 'http://127.0.0.1:8888'},
       // stitchMode: 'CSS',
       // matchTimeout: 0,

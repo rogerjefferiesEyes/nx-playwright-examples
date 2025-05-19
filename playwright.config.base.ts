@@ -14,7 +14,7 @@ const eyesBaseConfig = {
   // failTestsOnDiff: false,
   // appName: 'My App',
   // matchLevel: 'Strict',
-  batch: { name: 'NX e2e Tests' },
+  batch: { name: 'NX e2e Tests',  notifyOnCompletion: true},
   // proxy: {url: 'http://127.0.0.1:8888'},
   // stitchMode: 'CSS',
   // matchTimeout: 0,
