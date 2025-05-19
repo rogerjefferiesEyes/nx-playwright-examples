@@ -83,7 +83,7 @@ jobs:
       - name: Test code 
         run: npx nx e2e mands-e2e
 
-      - name: Close Applitools Batch
-        if: always()
-        run: curl -v -X DELETE "$APPLITOOLS_SERVER_URL/api/sessions/batches/$APPLITOOLS_BATCH_ID/close/bypointerid?apiKey=$APPLITOOLS_API_KEY"
+      # - name: Close Applitools Batch
+      #   if: always()
+      #   run: curl -v -X DELETE "$APPLITOOLS_SERVER_URL/api/sessions/batches/$APPLITOOLS_BATCH_ID/close/bypointerid?apiKey=$APPLITOOLS_API_KEY"
         
