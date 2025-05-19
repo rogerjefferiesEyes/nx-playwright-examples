@@ -5,8 +5,6 @@ test('should start page', async ({ page, eyes }) => {
   await page.goto('https://demo.applitools.com/app.html');
   await eyes.check('Homepage', {
     fully: true,
-    matchLevel: 'None',
-    strictRegions: ['div.balance'],
     layoutBreakpoints: true,
     waitBeforeCapture: 3000
   });
