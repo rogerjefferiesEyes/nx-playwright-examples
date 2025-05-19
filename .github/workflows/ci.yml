@@ -1,11 +1,11 @@
 name: CI
 on:
-  push:
-    branches: [ main ]
+  # push:
+  #   branches: [ main ]
   pull_request:
     branches:
       - '**'
-  workflow_dispatch:
+  # workflow_dispatch:
 
 env: 
   APPLITOOLS_API_KEY: ${{ secrets.APPLITOOLS_API_KEY }}
